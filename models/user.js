@@ -82,6 +82,27 @@ UserSchema.statics.findByToken = function (token) {
     'tokens.access': 'auth'
   });
 };
+//find A user with username and password
+UserSchema.statics.findByCredentials = function (username, password) {
+  var User = this;
+
+  return User.findOne({username}).then((user) => {
+    if (!user) {
+      return Promise.reject();
+    }
+
+    return new Promise((resolve, reject) => {
+      // Use bcrypt.compare to compare password and user.password
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (res) {
+          resolve(user);
+        } else {
+          reject();
+        }
+      });
+    });
+  });
+};
 
 //to hash and salt the pasword before saving
 UserSchema.pre('save', function (next) {
