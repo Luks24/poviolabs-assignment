@@ -3,6 +3,7 @@ const express = require("express"),
       _ = require('lodash');  
       
       
+const {ObjectID} = require('mongodb');     
 const {mongoose} = require("./db/mongoose");
 const{User} = require("./models/user");
 const {authenticate} = require('./middleware/authenticate');
@@ -45,6 +46,24 @@ app.post('/login', (req, res) => {
   });
 });
 
+// GET route for specific user
+app.get('/user/:id', (req, res) => {
+   var id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  User.findById(id).then((user) => {
+    if (!user) {
+      return res.status(404).send();
+    }
+
+    res.send(user);
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 
 app.listen( process.env.PORT, () =>{
