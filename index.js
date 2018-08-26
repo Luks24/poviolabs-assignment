@@ -1,22 +1,41 @@
 const express = require("express"),
-      bodyParser = require("body-parser");
+      bodyParser = require("body-parser"),
+      _ = require('lodash');  
+      
       
 const {mongoose} = require("./db/mongoose");
 const{User} = require("./models/user");
+const {authenticate} = require('./middleware/authenticate');
 
 const app = express();
 
 app.use(bodyParser.json());
 
 
-//testing 
-app.get("/", (req, res) => {
-    res.send("Hello world");
-})
+// POST route for signing up
+app.post('/signup', (req, res) => {
+  let body = _.pick(req.body, ['username', 'password']);
+  let user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
+//GET route for getting current user
+app.get('/me', authenticate, (req, res) => {
+  res.send(req.user);
+});
+
+
 
 
 app.listen( process.env.PORT, () =>{
     console.log("server started");
 });
 
-module.exports = {app}
+module.exports = {app};
