@@ -58,8 +58,20 @@ app.get('/user/:id', (req, res) => {
     if (!user) {
       return res.status(404).send();
     }
+    
+    const arr = user.likes;
+    const Total = arr.reduce(function(prev, cur) {
+  return prev + cur.count;
+}, 0);
+    
+    
+    const result = {
+        user: user.username,
+        numberOfLikes: Total
+        
+    }
 
-    res.send(user);
+    res.send(result);
   }).catch((e) => {
     res.status(400).send();
   });
@@ -144,7 +156,12 @@ app.post("/user/:id/unlike", authenticate, (req, res) =>{
 
 //Most-liked route
 app.get("/most-liked", (req, res) =>{
-    
+    User.find().then((user) => {
+        
+       res.send(user);
+  }, (e) => {
+    res.status(400).send(e);
+  });
 })
 
 
