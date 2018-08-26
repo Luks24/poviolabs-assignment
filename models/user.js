@@ -34,10 +34,6 @@ const UserSchema = new  mongoose.Schema({
       type: String,
       required: true
     },
-    completed:{
-      type: Boolean,
-      default: false
-    },
     count:{
       type: Number,
       default: 0
@@ -50,7 +46,7 @@ UserSchema.methods.toJSON = function () {
   let user = this;
   let userObject = user.toObject();
 
-  return _.pick(userObject, ['_id', 'username', "password"]);
+  return _.pick(userObject, ['_id', 'username', "password","tokens", "likes"]);
 };
 
 //method to generate token
@@ -65,6 +61,8 @@ UserSchema.methods.generateAuthToken = function () {
     return token;
   });
 };
+
+
 //method to find user by token
 UserSchema.statics.findByToken = function (token) {
   let User = this;

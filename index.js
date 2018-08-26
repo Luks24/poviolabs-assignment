@@ -66,6 +66,88 @@ app.get('/user/:id', (req, res) => {
 });
 
 
+//reset password
+
+app.post("/update-password", authenticate, (req, res) =>{
+    
+})
+
+
+// ADD like route
+app.post("/user/:id/like", authenticate, (req, res) =>{
+   var id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  User.findById(id).then((user) => {
+    if (!user) {
+      return res.status(404).send();
+    }
+    
+    let find = user.likes.find(x => x.user_id === req.user.id);
+    
+    if(find === undefined){
+        let user_id = req.user._id;
+        let count = 1;
+
+            user.likes.push({user_id, count});
+            user.save();
+            
+            res.send(user);
+    }
+        
+        find.count = 1;
+        user.save();
+        res.send(user);
+        
+
+  }).catch((e) => {
+    res.status(400).send();
+  });
+    
+});
+
+//UN-like route
+app.post("/user/:id/unlike", authenticate, (req, res) =>{
+    var id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  User.findById(id).then((user) => {
+    if (!user) {
+      return res.status(404).send();
+    }
+    
+    let find = user.likes.find(x => x.user_id === req.user.id);
+    
+    if(find === undefined){
+        
+            
+            res.send("you can/t unlike it if you didn like it");
+    }
+            
+        
+        find.count = 0;
+        user.save();
+        res.send(user);
+    
+
+  }).catch((e) => {
+    res.status(400).send();
+  });
+    
+});
+
+//Most-liked route
+app.get("/most-liked", (req, res) =>{
+    
+})
+
+
 app.listen( process.env.PORT, () =>{
     console.log("server started");
 });
