@@ -35,7 +35,7 @@ app.get('/me', authenticate, (req, res) => {
 //Post route for logging in
 
 app.post('/login', (req, res) => {
-  var body = _.pick(req.body, ['username', 'password']);
+  const body = _.pick(req.body, ['username', 'password']);
 
   User.findByCredentials(body.username, body.password).then((user) => {
     return user.generateAuthToken().then((token) => {
@@ -87,7 +87,7 @@ app.post("/update-password", authenticate, (req, res) =>{
 
 // ADD like route
 app.post("/user/:id/like", authenticate, (req, res) =>{
-   var id = req.params.id;
+   const id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
@@ -97,10 +97,13 @@ app.post("/user/:id/like", authenticate, (req, res) =>{
     if (!user) {
       return res.status(404).send();
     }
-    
+    //function finding the user
     let find = user.likes.find(x => x.user_id === req.user.id);
-    
-    if(find === undefined){
+    if(req.params.id === req.user.id){
+      res.send("you cant like yourself")
+    }else if(find === undefined){
+      
+      //creating new like
         let user_id = req.user._id;
         let count = 1;
 
@@ -108,22 +111,21 @@ app.post("/user/:id/like", authenticate, (req, res) =>{
             user.save();
             
             res.send(user);
-    }
-        
-        find.count = 1;
+    }else{
+      
+      //liking existing user likes
+      find.count = 1;
         user.save();
         res.send(user);
-        
-
+    }
   }).catch((e) => {
     res.status(400).send();
   });
-    
 });
 
 //UN-like route
 app.post("/user/:id/unlike", authenticate, (req, res) =>{
-    var id = req.params.id;
+    const id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
@@ -133,21 +135,17 @@ app.post("/user/:id/unlike", authenticate, (req, res) =>{
     if (!user) {
       return res.status(404).send();
     }
-    
+    //finding user
     let find = user.likes.find(x => x.user_id === req.user.id);
-    
+    //if there are no likes for authenticated user you cant unlike it
     if(find === undefined){
-        
-            
-            res.send("you can/t unlike it if you didn like it");
+    
+      res.send("you can/t unlike it if you didn like it");
     }
-            
-        
+   // reset number of likes for authenticated user to 0 
         find.count = 0;
         user.save();
         res.send(user);
-    
-
   }).catch((e) => {
     res.status(400).send();
   });
@@ -157,8 +155,20 @@ app.post("/user/:id/unlike", authenticate, (req, res) =>{
 //Most-liked route
 app.get("/most-liked", (req, res) =>{
     User.find().then((user) => {
-        
-       res.send(user);
+         const arr = user.map(el => {
+           let newObj = {
+             username: el.username,
+             likes: el.likes.reduce(function(prev, cur) {
+                                       return prev + cur.count;
+                                    }, 0)
+           }
+           return newObj;
+         });
+         
+          arr.sort(function (a, b) {
+            return b.likes - a.likes;
+          });
+       res.send(arr);
   }, (e) => {
     res.status(400).send(e);
   });

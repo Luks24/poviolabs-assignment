@@ -3,6 +3,6 @@
 const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/povio7");
+mongoose.connect("mongodb://localhost:27017/povio01");
 
 module.exports = {mongoose};
