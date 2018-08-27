@@ -81,8 +81,20 @@ app.get('/user/:id', (req, res) => {
 //reset password
 
 app.post("/update-password", authenticate, (req, res) =>{
+  
+ 
+  const newPassword = _.pick(req.body,  'password');
+
+  User.findByCredentials(req.user.username, req.user.password).then((user) => {
     
-})
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+}); 
+
 
 
 // ADD like route
@@ -154,24 +166,7 @@ app.post("/user/:id/unlike", authenticate, (req, res) =>{
 
 //Most-liked route
 app.get("/most-liked", (req, res) =>{
-    User.find().then((user) => {
-         const mostLikedArr = user.map(el => {
-           let newObj = {
-             username: el.username,
-             likes: el.likes.reduce(function(prev, cur) {
-                                       return prev + cur.count;
-                                    }, 0)
-           }
-           return newObj;
-         });
-         
-          mostLikedArr.sort(function (a, b) {
-            return b.likes - a.likes;
-          });
-       res.send({mostLikedArr});
-  }, (e) => {
-    res.status(400).send(e);
-  });
+    
 })
 
 

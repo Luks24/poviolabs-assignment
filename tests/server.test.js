@@ -35,8 +35,8 @@ describe('GET /me', () => {
 
 describe('POST /signup', () => {
   it('should create a user', (done) => {
-    var username = 'example@example.com';
-    var password = '123mnb!';
+    const username = 'example@example.com';
+    const password = '123mnb!';
 
     request(app)
       .post('/signup')
@@ -147,7 +147,7 @@ describe('GET /user/:id', () => {
   });
 
   it('should return 404 if todo not found', (done) => {
-    var hexId = new ObjectID().toHexString();
+    const hexId = new ObjectID().toHexString();
 
     request(app)
       .get(`/user/${hexId}`)
@@ -171,6 +171,32 @@ describe('GET /most-liked', () => {
       .expect((res) => {
         expect(res.body.mostLikedArr.length).toBe(2);
       })
+      .end(done);
+  });
+});
+
+
+describe('POST /user/:id/like', () => {
+  it('should return 404 if user id not found', (done) => {
+    
+    const hexId = new ObjectID().toHexString();
+
+    request(app)
+       .get(`/user/${hexId}/like`)
+      .expect(404)
+      .end(done);
+  });
+
+});
+
+
+describe('POST /user/:id/unlike', () => {
+  it('should return 404 if user id not found', (done) => {
+    const hexId = new ObjectID().toHexString();
+
+    request(app)
+       .get(`/user/${hexId}/unlike`)
+      .expect(404)
       .end(done);
   });
 });
