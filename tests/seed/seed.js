@@ -13,6 +13,10 @@ const users = [{
   tokens: [{
     access: 'auth',
     token: jwt.sign({_id: userOneId, access: 'auth'}, 'abc123').toString()
+  }],
+  likes: [{
+    user_id:userOneId,
+    count: 1
   }]
 }, {
   _id: userTwoId,

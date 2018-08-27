@@ -1,6 +1,6 @@
 const expect = require('expect');
 const request = require('supertest');
-
+const {ObjectID} = require('mongodb');
 
 
 const {app} = require('./../index');
@@ -132,5 +132,45 @@ describe('POST /login', () => {
           done();
         }).catch((e) => done(e));
       });
+  });
+});
+
+describe('GET /user/:id', () => {
+  it('should return todo doc', (done) => {
+    request(app)
+      .get(`/user/${users[0]._id.toHexString()}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.result.user).toBe(users[0].username);
+      })
+      .end(done);
+  });
+
+  it('should return 404 if todo not found', (done) => {
+    var hexId = new ObjectID().toHexString();
+
+    request(app)
+      .get(`/user/${hexId}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 for non-object ids', (done) => {
+    request(app)
+      .get('/user/123abc')
+      .expect(404)
+      .end(done);
+  });
+});
+
+describe('GET /most-liked', () => {
+  it('should get all users', (done) => {
+    request(app)
+      .get('/most-liked')
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.mostLikedArr.length).toBe(2);
+      })
+      .end(done);
   });
 });

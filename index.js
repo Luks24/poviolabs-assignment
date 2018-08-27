@@ -71,7 +71,7 @@ app.get('/user/:id', (req, res) => {
         
     }
 
-    res.send(result);
+    res.send({result});
   }).catch((e) => {
     res.status(400).send();
   });
@@ -155,7 +155,7 @@ app.post("/user/:id/unlike", authenticate, (req, res) =>{
 //Most-liked route
 app.get("/most-liked", (req, res) =>{
     User.find().then((user) => {
-         const arr = user.map(el => {
+         const mostLikedArr = user.map(el => {
            let newObj = {
              username: el.username,
              likes: el.likes.reduce(function(prev, cur) {
@@ -165,10 +165,10 @@ app.get("/most-liked", (req, res) =>{
            return newObj;
          });
          
-          arr.sort(function (a, b) {
+          mostLikedArr.sort(function (a, b) {
             return b.likes - a.likes;
           });
-       res.send(arr);
+       res.send({mostLikedArr});
   }, (e) => {
     res.status(400).send(e);
   });
