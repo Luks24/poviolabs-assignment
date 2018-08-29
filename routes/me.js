@@ -1,8 +1,8 @@
 const express = require("express"),
       bodyParser = require("body-parser"),
-      _ = require('lodash');
+      _ = require('lodash'),
+      bcrypt = require('bcryptjs');
       
-const {mongoose} = require("../db/mongoose");
 const{User} = require("../models/user");
 const {authenticate} = require('../middleware/authenticate');
 
@@ -15,17 +15,26 @@ router.get('/me', authenticate, (req, res) => {
 });
 
 
-//reset password
-
+//PATCH route for updating password
 router.patch("/me/update-password", authenticate, (req, res) =>{
+
+    let newPassword = _.pick(req.body, 'password');
+    const newP = newPassword.password;
+     
+       let hash = bcrypt.hashSync(newP, 10);
+
+    User.findByIdAndUpdate(req.user.id, { $set: { password:hash }},  function (err, user){
+  if (err) {
+      res.send(err)
+  }else{
+      res.send("password updated")
+  }
   
-  let password = _.pick(req.body,  'password');
-  /// have to hash the password
-User.findByIdAndUpdate(req.user.id, password, { new: true }, (err, user) => {
- 
-  });
-  
-res.send("updated password")
-}); 
+});
+        
+
+});
+
+
 
 module.exports = router;

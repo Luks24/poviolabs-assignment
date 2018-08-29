@@ -3,7 +3,6 @@ const express = require("express"),
 
 
 const {ObjectID} = require('mongodb');        
-const {mongoose} = require("../db/mongoose");
 const{User} = require("../models/user");
 const {authenticate} = require('../middleware/authenticate');
 

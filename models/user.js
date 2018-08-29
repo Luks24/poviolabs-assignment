@@ -41,6 +41,8 @@ const UserSchema = new  mongoose.Schema({
   }]
 });
 
+
+
 //returning specific data
 UserSchema.methods.toJSON = function () {
   let user = this;

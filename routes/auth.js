@@ -1,8 +1,7 @@
 const express = require("express"),
       bodyParser = require("body-parser"),
       _ = require('lodash');
-      
-const {mongoose} = require("../db/mongoose");
+
 const{User} = require("../models/user");
 
 

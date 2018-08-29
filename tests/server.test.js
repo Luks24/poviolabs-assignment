@@ -200,3 +200,17 @@ describe('POST /user/:id/unlike', () => {
       .end(done);
   });
 });
+
+describe('PATCH /me/update-password', () => {
+ 
+
+  it('should return 40 if not found', (done) => {
+    request(app)
+      .get('/me/update-password')
+      .expect(404)
+      .expect((res) => {
+        expect(res.send).toEqual(undefined);
+      })
+      .end(done);
+  });
+});
